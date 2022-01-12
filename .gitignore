@@ -1,0 +1,10 @@
+# Directories
+.vs/
+bin/
+bin-int/
+
+# Files
+*.user
+Typewriter.sln
+Typewriter/Typewriter.vcxproj
+Typewriter/Typewriter.vcxproj.filters

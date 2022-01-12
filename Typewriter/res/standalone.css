@@ -1,0 +1,64 @@
+body {
+    background-color: #333;
+    font-family: "Courier New", monospace;
+    font-size: 12pt;
+}
+
+.Page {
+    background-color: #FFF;
+    width: 8.25in;
+    height: 11.75in;
+    padding: 1in;
+    margin-top: 0.2in;
+    margin-bottom: 0.2in;
+    margin-left: auto;
+    margin-right: auto;
+    box-sizing: border-box;
+}
+
+.Title {
+    text-align: center;
+    font-weight: bold;
+    margin-top: 3in;
+    height: 0.5in;
+}
+
+.Subtitle {
+    text-align: center;
+    font-weight: bold;
+    height: 6.25in;
+}
+
+.SceneNum {
+    margin-bottom: 0.2in;
+    font-weight: bold;
+    display: inline-block;
+    width: 0.5in;
+}
+
+.Scene {
+    margin-bottom: 0.2in;
+    font-weight: bold;
+    display: inline-block;
+}
+
+.Directorial {
+    margin-bottom: 0.2in;
+    margin-left: 0.5in;
+}
+
+.Name {
+    margin-left: 2.7in;
+    margin-right: 1.5in;
+}
+
+.Parenthetical {
+    margin-left: 2.1in;
+    margin-right: 1.5in;
+}
+
+.Speech {
+    margin-left: 1.5in;
+    margin-right: 1.5in;
+    margin-bottom: 0.2in;
+}
