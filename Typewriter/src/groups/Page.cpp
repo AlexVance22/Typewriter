@@ -12,11 +12,11 @@ constexpr float inToPx(float in)
 
 void Page::reallign()
 {
-	float lasttop = 60 + inToPx(1.f);
+	float lasttop = inToPx(1.f);
 
 	for (auto& div : m_divs)
 	{
-		div.setBoxPosition(sf::Vector2f(div.getBoxPosition().x, lasttop));
+		div.setBoxPosition(sf::Vector2f(495, lasttop));
 		lasttop += div.getBoxSize().y;
 	}
 }
@@ -40,13 +40,22 @@ bool Page::findFocused()
 	return false;
 }
 
+Page::Page()
+	: m_view(sf::FloatRect(0, 0, 1920, 980))
+{
+	m_background.setPosition(495, m_view.getCenter().y - 490.f);
+	m_background.setSize(sf::Vector2f(990, 980));
+	m_background.setFillColor(sf::Color(255, 255, 255));
+}
+
 void Page::addDivision(EditState state)
 {
 	DivEditor area;
 
-	area.setBoxPosition(sf::Vector2f(465, 121));
+	area.setBoxPosition(sf::Vector2f(495, inToPx(1.f)));
 	area.setBoxSize(sf::Vector2f(990, 0));
 	area.setState(state);
+	area.setView(m_view);
 
 	switch (state)
 	{
@@ -157,7 +166,23 @@ EditState Page::getActiveState() const
 	return m_divs[m_active].getState();
 }
 
-void Page::handleEvent(const sf::Event & event)
+void Page::resetView()
+{
+	m_view.reset(sf::FloatRect(0, 0, 1920, 980));
+}
+
+bool Page::contains(const sf::RenderWindow& window, int x, int y) const
+{
+	const sf::Vector2f pos = window.mapPixelToCoords(sf::Vector2i(x, y), m_view);
+	return m_background.getGlobalBounds().contains(pos);
+}
+void Page::removeFocus()
+{
+	for (auto& div : m_divs)
+		div.setFocused(false);
+}
+
+void Page::handleEvent(const sf::Event& event)
 {
 	try
 	{
@@ -180,30 +205,56 @@ void Page::handleEvent(const sf::Event & event)
 		refocus();
 	}
 
-	if (m_divs[m_active].isResized())
-		reallign();
-
-	if (event.type == sf::Event::MouseButtonPressed && !m_divs[m_active].isFocused())
+	if (!m_divs.empty())
 	{
-		const sf::Vector2i pos = (sf::Vector2i)DivEditor::window->mapPixelToCoords(
-			sf::Vector2i(event.mouseButton.x, event.mouseButton.y), *DivEditor::view);
+		if (m_divs[m_active].isResized())
+			reallign();
+	}
 
-		if (sf::IntRect(465, 60, 990, 950).contains(pos))
+	switch (event.type)
+	{
+	case sf::Event::MouseButtonPressed:
+		if (!m_divs[m_active].isFocused())
 		{
-			if (findFocused())
-				return;
+			const sf::Vector2i pos = (sf::Vector2i)Widget::p_window->mapPixelToCoords(
+				sf::Vector2i(event.mouseButton.x, event.mouseButton.y), m_view);
 
-			if (pos.y < m_divs.front().getBoxPosition().y)
-				m_active = 0;
-			else
-				m_active = m_divs.size() - 1;
+			if (sf::IntRect(465, 60, 990, 980).contains(pos))
+			{
+				if (findFocused())
+					return;
 
-			m_divs[m_active].setFocused(true);
+				if (pos.y < m_divs.front().getBoxPosition().y)
+					m_active = 0;
+				else
+					m_active = m_divs.size() - 1;
+
+				m_divs[m_active].setFocused(true);
+			}
 		}
+		break;
+
+	case sf::Event::MouseWheelScrolled:
+		if (m_view.getCenter().y - 16.f * event.mouseWheelScroll.delta < 490)
+			m_view.setCenter(m_view.getCenter().x, 490);
+		else
+			m_view.move(0.f, -16.f * event.mouseWheelScroll.delta);
+
+		m_background.setPosition(495, m_view.getCenter().y - 490);
+		break;
+
+	case sf::Event::Resized:
+		m_view.setCenter(960, 490);
+		m_view.setSize((float)event.size.width, 980);
+		break;
 	}
 }
 void Page::draw(sf::RenderTarget & target, sf::RenderStates states) const
 {
+	target.setView(m_view);
+
+	target.draw(m_background);
+
 	for (const auto& div : m_divs)
 		target.draw(div);
 }

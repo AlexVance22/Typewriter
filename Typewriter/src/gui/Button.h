@@ -1,18 +1,22 @@
 #pragma once
 
+#include "Widget.h"
 
-class Button : public sf::Drawable
+
+class Button : public Widget
 {
 private:
-	sf::FloatRect m_bounds;
-	sf::RectangleShape m_shape;
 	sf::Text m_text;
 
+	bool m_clicked = false;
+
 public:
-	Button(sf::FloatRect bounds, const sf::String& text, const sf::Font& font);
+	Button();
 
-	bool mouseClick(int x, int y);
-	void mouseMove(int x, int y);
+	void create(sf::FloatRect bounds, const sf::String& text);
 
+	bool getClick() const;
+
+	void handleEvent(const sf::Event& event);
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 };

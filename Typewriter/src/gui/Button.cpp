@@ -2,18 +2,24 @@
 #include "Button.h"
 
 
-Button::Button(sf::FloatRect bounds, const sf::String& text, const sf::Font& font)
+Button::Button()
+{
+	m_background.setFillColor(sf::Color(65, 65, 90));
+
+	m_text.setCharacterSize(20);
+	m_text.setFillColor(sf::Color(255, 255, 255));
+}
+
+
+void Button::create(sf::FloatRect bounds, const sf::String& text)
 {
 	m_bounds = bounds;
 
-	m_shape.setPosition(m_bounds.left, m_bounds.top);
-	m_shape.setSize(sf::Vector2f(m_bounds.width, m_bounds.height));
-	m_shape.setFillColor(sf::Color(65, 65, 90));
+	m_background.setPosition(m_bounds.left, m_bounds.top);
+	m_background.setSize(sf::Vector2f(m_bounds.width, m_bounds.height));
 
 	m_text.setString(text);
-	m_text.setFont(font);
-	m_text.setCharacterSize(20);
-	m_text.setFillColor(sf::Color(255, 255, 255));
+	m_text.setFont(*p_font);
 
 	const sf::Vector2f center(m_bounds.left + m_bounds.width * 0.5f, m_bounds.top + m_bounds.height * 0.5f);
 	const sf::FloatRect textbounds = m_text.getGlobalBounds();
@@ -22,26 +28,38 @@ Button::Button(sf::FloatRect bounds, const sf::String& text, const sf::Font& fon
 }
 
 
-bool Button::mouseClick(int x, int y)
+bool Button::getClick() const
 {
-	if (m_bounds.contains((float)x, (float)y))
-	{
-		m_shape.setFillColor(sf::Color(90, 90, 120));
-		return true;
-	}
-	return false;
+	return m_clicked;
 }
 
-void Button::mouseMove(int x, int y)
+
+void Button::handleEvent(const sf::Event& event)
 {
-	if (m_bounds.contains((float)x, (float)y))
-		m_shape.setFillColor(sf::Color(80, 80, 110));
-	else
-		m_shape.setFillColor(sf::Color(65, 65, 90));
+	m_clicked = false;
+
+	switch (event.type)
+	{
+	case sf::Event::MouseButtonPressed:
+		if (m_bounds.contains(translate(event.mouseButton.x, event.mouseButton.y)))
+		{
+			m_background.setFillColor(sf::Color(90, 90, 120));
+			m_clicked = true;
+		}
+		else
+			m_background.setFillColor(sf::Color(65, 65, 90));
+		break;
+	case sf::Event::MouseMoved:
+		if (m_bounds.contains(translate(event.mouseButton.x, event.mouseButton.y)))
+			m_background.setFillColor(sf::Color(80, 80, 110));
+		else
+			m_background.setFillColor(sf::Color(65, 65, 90));
+		break;
+	}
 }
 
 void Button::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
-	target.draw(m_shape);
+	target.draw(m_background);
 	target.draw(m_text);
 }

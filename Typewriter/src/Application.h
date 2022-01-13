@@ -3,8 +3,10 @@
 #include "EditState.h"
 
 #include "gui/ToggleArray.h"
-#include "gui/EditBox.h"
-#include "gui/Page.h"
+#include "groups/TitlePage.h"
+#include "groups/Page.h"
+
+#include "groups/FileList.h"
 
 
 class Application
@@ -14,19 +16,15 @@ private:
 	sf::Clock m_clock;
 	sf::Font m_font;
 
-	sf::RectangleShape m_pageBackground;
+	TitlePage m_titlePage;
 	ToggleArray m_tools;
-	EditBox m_titleEditor;
-	EditBox m_subEditor;
 	Page m_page;
+
+	FileList m_fileList;
 
 	EditState m_state = EditState::None;
 
-	sf::View m_scrollbar;
-	sf::View m_default;
-
 	bool m_newProject = true;
-	bool m_boot = true;
 
 	sf::String m_projName = "empty";
 	sf::String m_title = "";
@@ -40,6 +38,10 @@ private:
 	void handleEvent(const sf::Event& event);
 
 	void controlKeys(sf::Keyboard::Key key);
+
+	void mouseClick(const sf::Event& event);
+	void keyPressed(const sf::Event& event);
+	void textEntered(const sf::Event& event);
 
 	void render();
 

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "EditState.h"
-#include "DivEditor.h"
+#include "gui/DivEditor.h"
 
 
 class Page : public sf::Drawable
@@ -10,6 +10,10 @@ private:
 	std::vector<DivEditor> m_divs;
 	size_t m_active = 0;
 
+	sf::RectangleShape m_background;
+
+	sf::View m_view;
+
 private:
 	void reallign();
 	void refocus();
@@ -17,7 +21,7 @@ private:
 	bool findFocused();
 
 public:
-	Page() = default;
+	Page();
 
 	void addDivision(EditState state);
 	void setDivisionState(EditState state);
@@ -30,6 +34,11 @@ public:
 	DivEditor& getActive();
 	size_t getActiveIndex() const;
 	EditState getActiveState() const;
+
+	void resetView();
+
+	bool contains(const sf::RenderWindow& window, int x, int y) const;
+	void removeFocus();
 
 	void handleEvent(const sf::Event& event);
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const;

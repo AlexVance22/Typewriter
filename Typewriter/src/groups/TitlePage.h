@@ -1,15 +1,13 @@
 #pragma once
 
-#include "Widget.h"
+#include "gui/EditBox.h"
 
 
-class ToggleArray : public Widget
+class TitlePage : public sf::Drawable
 {
 private:
-	std::vector<sf::RectangleShape> m_shapes;
-	std::vector<sf::Text> m_labels;
-
-	size_t m_selected = 0;
+	EditBox m_titleEditor;
+	EditBox m_subEditor;
 
 	sf::RectangleShape m_background;
 
@@ -18,14 +16,16 @@ private:
 	bool m_enabled = true;
 
 public:
-	ToggleArray();
+	TitlePage();
 
-	void create(const std::vector<sf::String>& buttons, float width);
+	void setTitle(const sf::String& title);
+	void setSubtitle(const sf::String& subtitle);
 
-	size_t getSelected() const;
-	void setSelected(size_t index);
+	const sf::String& getTitle() const;
+	const sf::String& getSubtitle() const;
 
 	bool contains(const sf::RenderWindow& window, int x, int y) const;
+	void removeFocus();
 
 	void setEnabled(bool enabled);
 	bool getEnabled() const;

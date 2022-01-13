@@ -125,10 +125,10 @@ void EditBox::mouseClick(int x, int y, sf::Mouse::Button button)
 {
 	if (button == sf::Mouse::Left)
 	{
-		const sf::Vector2i pos(x, y);
+		const sf::Vector2f pos = translate(x, y);
 
 		m_held = true;
-		if (m_bounds.contains((sf::Vector2f)pos))
+		if (m_bounds.contains(pos))
 		{
 			setFocused(true);
 
@@ -144,9 +144,9 @@ void EditBox::mouseMove(int x, int y)
 {
 	if (m_held)
 	{
-		const sf::Vector2i pos(x, y);
+		const sf::Vector2f pos = translate(x, y);
 
-		if (m_bounds.contains((sf::Vector2f)pos) && m_focused)
+		if (m_bounds.contains(pos) && m_focused)
 		{
 			setCursorToMouse(pos.x, pos.y);
 			m_selection[1] = m_cursorPos;
@@ -159,10 +159,10 @@ void EditBox::mouseRelease(int x, int y, sf::Mouse::Button button)
 {
 	if (button == sf::Mouse::Left)
 	{
-		const sf::Vector2i pos(x, y);
+		const sf::Vector2f pos = translate(x, y);
 
 		m_held = false;
-		if (m_bounds.contains((sf::Vector2f)pos) && m_focused)
+		if (m_bounds.contains(pos) && m_focused)
 		{
 			setCursorToMouse(pos.x, pos.y);
 			m_selection[1] = m_cursorPos;
@@ -173,28 +173,34 @@ void EditBox::mouseRelease(int x, int y, sf::Mouse::Button button)
 	}
 }
 
-EditBox::EditBox(sf::FloatRect bounds, const sf::Font& font)
+EditBox::EditBox()
 {
-	m_bounds = bounds;
-
-	m_background.setPosition(bounds.left, bounds.top);
-	m_background.setSize(sf::Vector2f(bounds.width, bounds.height));
 	m_background.setFillColor(sf::Color(10, 10, 15));
 	m_background.setOutlineThickness(2);
 	m_background.setOutlineColor(sf::Color(60, 60, 90));
 
-	m_text.setPosition(std::floor(m_bounds.left + 5.f), std::floor(m_bounds.top + 5.f));
 	m_text.setFillColor(sf::Color(255, 255, 255));
 	m_text.setCharacterSize(20);
-	m_text.setFont(font);
+	m_text.setFont(*p_font);
 
 	m_cursor.setPosition(m_text.getPosition());
 	m_cursor.setFillColor(sf::Color(255, 255, 255));
 	m_cursor.setSize(sf::Vector2f(1, 20));
 
-	m_highlight.setPosition(m_bounds.left, m_bounds.top);
 	m_highlight.setSize(sf::Vector2f(0, 20));
 	m_highlight.setFillColor(sf::Color(100, 80, 100));
+}
+
+void EditBox::create(sf::FloatRect bounds)
+{
+	m_bounds = bounds;
+
+	m_background.setPosition(bounds.left, bounds.top);
+	m_background.setSize(sf::Vector2f(bounds.width, bounds.height));
+
+	m_text.setPosition(std::floor(m_bounds.left + 10.f), std::floor(m_bounds.top + 10.f));
+
+	m_highlight.setPosition(m_bounds.left, m_bounds.top);
 }
 
 void EditBox::setText(const sf::String& text)
@@ -206,19 +212,6 @@ void EditBox::setText(const sf::String& text)
 const sf::String& EditBox::getText() const
 {
 	return m_string;
-}
-
-void EditBox::setFocused(bool focus)
-{
-	m_focused = focus;
-
-	if (!focus)
-	{
-		m_selection[0] = 0;
-		m_selection[1] = 0;
-		m_selected.clear();
-		m_highlight.setSize(sf::Vector2f(0.f, 20.f));
-	}
 }
 
 void EditBox::setCursorPosition(size_t pos)
@@ -238,6 +231,23 @@ void EditBox::setCursorPosition(size_t pos)
 const sf::String& EditBox::getSelectedText() const
 {
 	return m_selected;
+}
+
+void EditBox::setFocused(bool focus)
+{
+	m_focused = focus;
+
+	if (!focus)
+	{
+		m_selection[0] = 0;
+		m_selection[1] = 0;
+		m_selected.clear();
+		m_highlight.setSize(sf::Vector2f(0.f, 20.f));
+	}
+}
+bool EditBox::getFocused() const
+{
+	return m_focused;
 }
 
 void EditBox::handleEvent(const sf::Event& event)

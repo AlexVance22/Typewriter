@@ -1,9 +1,11 @@
 #pragma once
 
+#include "Widget.h"
+
 #include "EditState.h"
 
 
-class DivEditor : public sf::Drawable
+class DivEditor : public Widget
 {
 public:
 	enum class Style
@@ -15,16 +17,11 @@ public:
 		Lower	= 4
 	};
 
-	static const sf::RenderWindow* window;
-	static const sf::Font* font;
-	static const sf::View* view;
-
 private:
 	Style m_case = Style::Input;
 	sf::String m_string;
 	sf::Text m_text;
 
-	sf::FloatRect m_bounds;
 	sf::FloatRect m_padding;
 
 	std::vector<size_t> m_lineSize;

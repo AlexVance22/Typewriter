@@ -4,12 +4,6 @@
 #include "Exceptions.h"
 
 
-const sf::RenderWindow* DivEditor::window = nullptr;
-const sf::Font* DivEditor::font = nullptr;
-
-const sf::View* DivEditor::view = nullptr;
-
-
 size_t DivEditor::charsPerLine() const
 {
 	const float linewidth = m_bounds.width - m_padding.left - m_padding.width;
@@ -210,10 +204,10 @@ void DivEditor::mouseClick(int x, int y, sf::Mouse::Button button)
 {
 	if (button == sf::Mouse::Left)
 	{
-		const sf::Vector2i pos = (sf::Vector2i)window->mapPixelToCoords(sf::Vector2i(x, y), *view);
+		const sf::Vector2f pos = translate(x, y);
 
 		m_held = true;
-		if (m_bounds.contains((sf::Vector2f)pos))
+		if (m_bounds.contains(pos))
 		{
 			setFocused(true);
 
@@ -229,9 +223,9 @@ void DivEditor::mouseMove(int x, int y)
 {
 	if (m_held)
 	{
-		const sf::Vector2i pos = (sf::Vector2i)window->mapPixelToCoords(sf::Vector2i(x, y), *view);
+		const sf::Vector2f pos = translate(x, y);
 
-		if (m_bounds.contains((sf::Vector2f)pos) && m_focused)
+		if (m_bounds.contains(pos) && m_focused)
 		{
 			setCursorToMouse(pos.x, pos.y);
 			m_selection[1] = m_cursorPos;
@@ -244,10 +238,10 @@ void DivEditor::mouseRelease(int x, int y, sf::Mouse::Button button)
 {
 	if (button == sf::Mouse::Left)
 	{
-		const sf::Vector2i pos = (sf::Vector2i)window->mapPixelToCoords(sf::Vector2i(x, y), *view);
+		const sf::Vector2f pos = translate(x, y);
 
 		m_held = false;
-		if (m_bounds.contains((sf::Vector2f)pos) && m_focused)
+		if (m_bounds.contains(pos) && m_focused)
 		{
 			setCursorToMouse(pos.x, pos.y);
 			m_selection[1] = m_cursorPos;
@@ -360,7 +354,7 @@ DivEditor::DivEditor()
 
 	m_text.setFillColor(sf::Color(0, 0, 0));
 	m_text.setCharacterSize(20);
-	m_text.setFont(*font);
+	m_text.setFont(*p_font);
 }
 
 void DivEditor::setText(const sf::String& text)

@@ -1,15 +1,13 @@
 #pragma once
 
+#include "Widget.h"
 
-class EditBox : public sf::Drawable
+
+class EditBox : public Widget
 {
 private:
 	sf::String m_string;
 	sf::Text m_text;
-
-	sf::FloatRect m_bounds;
-
-	sf::RectangleShape m_background;
 
 	sf::RectangleShape m_cursor;
 	size_t m_cursorPos = 0;
@@ -34,15 +32,18 @@ private:
 	void mouseRelease(int x, int y, sf::Mouse::Button button);
 
 public:
-	EditBox(sf::FloatRect bounds, const sf::Font& font);
+	EditBox();
+
+	void create(sf::FloatRect bounds);
 
 	void setText(const sf::String& text);
 	const sf::String& getText() const;
 
-	void setFocused(bool focus);
-
 	void setCursorPosition(size_t pos);
 	const sf::String& getSelectedText() const;
+
+	void setFocused(bool focus);
+	bool getFocused() const;
 
 	void handleEvent(const sf::Event& event);
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const;

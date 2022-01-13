@@ -3,7 +3,7 @@
 
 #include "Application.h"
 
-#include "gui/Page.h"
+#include "groups/Page.h"
 
 
 bool inHTML(Page& page, sf::String& title, sf::String& subtitle, const char* infile)
