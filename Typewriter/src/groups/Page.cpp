@@ -4,7 +4,7 @@
 #include "Exceptions.h"
 
 
-constexpr float inToPx(float in)
+constexpr static float inToPx(float in)
 {
 	return (in / 8.25f) * 990.f;
 }
@@ -16,7 +16,7 @@ void Page::reallign()
 
 	for (auto& div : m_divs)
 	{
-		div.setBoxPosition(sf::Vector2f(495, lasttop));
+		div.setBoxPosition(sf::Vector2f(465, lasttop));
 		lasttop += div.getBoxSize().y;
 	}
 }
@@ -40,10 +40,9 @@ bool Page::findFocused()
 	return false;
 }
 
-Page::Page()
-	: m_view(sf::FloatRect(0, 0, 1920, 980))
+Page::Page() : Group(sf::FloatRect(0, 0, 1920, 980))
 {
-	m_background.setPosition(495, m_view.getCenter().y - 490.f);
+	m_background.setPosition(465, m_view.getCenter().y - 490.f);
 	m_background.setSize(sf::Vector2f(990, 980));
 	m_background.setFillColor(sf::Color(255, 255, 255));
 }
@@ -52,7 +51,7 @@ void Page::addDivision(EditState state)
 {
 	DivEditor area;
 
-	area.setBoxPosition(sf::Vector2f(495, inToPx(1.f)));
+	area.setBoxPosition(sf::Vector2f(465, inToPx(1.f)));
 	area.setBoxSize(sf::Vector2f(990, 0));
 	area.setState(state);
 	area.setView(m_view);
@@ -171,11 +170,6 @@ void Page::resetView()
 	m_view.reset(sf::FloatRect(0, 0, 1920, 980));
 }
 
-bool Page::contains(const sf::RenderWindow& window, int x, int y) const
-{
-	const sf::Vector2f pos = window.mapPixelToCoords(sf::Vector2i(x, y), m_view);
-	return m_background.getGlobalBounds().contains(pos);
-}
 void Page::removeFocus()
 {
 	for (auto& div : m_divs)
@@ -184,77 +178,80 @@ void Page::removeFocus()
 
 void Page::handleEvent(const sf::Event& event)
 {
-	try
+	if (m_enableUpdate || event.type == sf::Event::Resized)
 	{
-		for (auto& div : m_divs)
-			div.handleEvent(event);
-	}
-	catch (const OutOfRange& e)
-	{
-		if (e.bound == 1 && m_active < m_divs.size() - 1)
+		try
 		{
-			m_active++;
-			m_divs[m_active].setCursorPosition(0);
+			for (auto& div : m_divs)
+				div.handleEvent(event);
 		}
-		else if (e.bound == -1 && m_active > 0)
+		catch (const OutOfRange& e)
 		{
-			m_active--;
-			m_divs[m_active].setCursorPosition(m_divs[m_active].getEndOfString());
+			if (e.bound == 1 && m_active < m_divs.size() - 1)
+			{
+				m_active++;
+				m_divs[m_active].setCursorPosition(0);
+			}
+			else if (e.bound == -1 && m_active > 0)
+			{
+				m_active--;
+				m_divs[m_active].setCursorPosition(m_divs[m_active].getEndOfString());
+			}
+
+			refocus();
 		}
 
-		refocus();
-	}
-
-	if (!m_divs.empty())
-	{
 		if (m_divs[m_active].isResized())
 			reallign();
-	}
 
-	switch (event.type)
-	{
-	case sf::Event::MouseButtonPressed:
-		if (!m_divs[m_active].isFocused())
+		switch (event.type)
 		{
-			const sf::Vector2i pos = (sf::Vector2i)Widget::p_window->mapPixelToCoords(
-				sf::Vector2i(event.mouseButton.x, event.mouseButton.y), m_view);
-
-			if (sf::IntRect(465, 60, 990, 980).contains(pos))
+		case sf::Event::MouseButtonPressed:
+			if (!m_divs[m_active].isFocused())
 			{
-				if (findFocused())
-					return;
+				const sf::Vector2i pos = (sf::Vector2i)Widget::p_window->mapPixelToCoords(
+					sf::Vector2i(event.mouseButton.x, event.mouseButton.y), m_view);
 
-				if (pos.y < m_divs.front().getBoxPosition().y)
-					m_active = 0;
-				else
-					m_active = m_divs.size() - 1;
+				if (sf::IntRect(465, 0, 990, 980).contains(pos))
+				{
+					if (findFocused())
+						return;
 
-				m_divs[m_active].setFocused(true);
+					if (pos.y < m_divs.front().getBoxPosition().y)
+						m_active = 0;
+					else
+						m_active = m_divs.size() - 1;
+
+					m_divs[m_active].setFocused(true);
+				}
 			}
+			break;
+
+		case sf::Event::MouseWheelScrolled:
+			if (m_view.getCenter().y - 16.f * event.mouseWheelScroll.delta < 490)
+				m_view.setCenter(m_view.getCenter().x, 490);
+			else
+				m_view.move(0.f, std::floor(-16.f * event.mouseWheelScroll.delta));
+
+			m_background.setPosition(465, m_view.getCenter().y - 490);
+			break;
+
+		case sf::Event::Resized:
+			m_view.setCenter(960, std::floor((float)event.size.height * 0.5f));
+			m_view.setSize((float)event.size.width, (float)event.size.height);
+			break;
 		}
-		break;
-
-	case sf::Event::MouseWheelScrolled:
-		if (m_view.getCenter().y - 16.f * event.mouseWheelScroll.delta < 490)
-			m_view.setCenter(m_view.getCenter().x, 490);
-		else
-			m_view.move(0.f, -16.f * event.mouseWheelScroll.delta);
-
-		m_background.setPosition(495, m_view.getCenter().y - 490);
-		break;
-
-	case sf::Event::Resized:
-		m_view.setCenter(960, 490);
-		m_view.setSize((float)event.size.width, 980);
-		break;
 	}
 }
 void Page::draw(sf::RenderTarget & target, sf::RenderStates states) const
 {
-	target.setView(m_view);
+	if (m_enableDisplay)
+	{
+		target.setView(m_view);
 
-	target.draw(m_background);
+		target.draw(m_background);
 
-	for (const auto& div : m_divs)
-		target.draw(div);
+		for (const auto& div : m_divs)
+			target.draw(div);
+	}
 }

@@ -1,18 +1,16 @@
 #pragma once
 
+#include "Group.h"
+
 #include "EditState.h"
 #include "gui/DivEditor.h"
 
 
-class Page : public sf::Drawable
+class Page : public Group
 {
 private:
 	std::vector<DivEditor> m_divs;
 	size_t m_active = 0;
-
-	sf::RectangleShape m_background;
-
-	sf::View m_view;
 
 private:
 	void reallign();
@@ -37,9 +35,8 @@ public:
 
 	void resetView();
 
-	bool contains(const sf::RenderWindow& window, int x, int y) const;
-	void removeFocus();
+	void removeFocus() override;
 
-	void handleEvent(const sf::Event& event);
-	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
+	void handleEvent(const sf::Event& event) override;
+	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 };

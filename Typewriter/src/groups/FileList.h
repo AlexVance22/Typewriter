@@ -1,11 +1,13 @@
 #pragma once
 
+#include "Group.h"
+
 #include "gui/Button.h"
 
 class Application;
 
 
-class FileList : public sf::Drawable
+class FileList : public Group
 {
 private:
 	std::vector<std::string> m_filenames;
@@ -16,13 +18,7 @@ private:
 
 	size_t m_selected = 0;
 
-	sf::RectangleShape m_background;
-
-	sf::View m_view;
-
-	bool m_enabled = false;
-
-	Application* p_parent;
+	Application* p_parent = nullptr;
 
 private:
 	void refreshFiles();
@@ -33,9 +29,10 @@ public:
 
 	void create(Application* parent);
 
-	void setEnabled(bool enabled);
-	bool getEnabled() const;
+	void setEnabled(bool enabled) override;
 
-	void handleEvent(const sf::Event& event);
-	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
+	void removeFocus() override;
+
+	void handleEvent(const sf::Event& event) override;
+	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 };

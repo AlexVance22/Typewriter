@@ -181,7 +181,6 @@ EditBox::EditBox()
 
 	m_text.setFillColor(sf::Color(255, 255, 255));
 	m_text.setCharacterSize(20);
-	m_text.setFont(*p_font);
 
 	m_cursor.setPosition(m_text.getPosition());
 	m_cursor.setFillColor(sf::Color(255, 255, 255));
@@ -198,9 +197,10 @@ void EditBox::create(sf::FloatRect bounds)
 	m_background.setPosition(bounds.left, bounds.top);
 	m_background.setSize(sf::Vector2f(bounds.width, bounds.height));
 
-	m_text.setPosition(std::floor(m_bounds.left + 10.f), std::floor(m_bounds.top + 10.f));
+	m_text.setPosition(std::floor(bounds.left + 10.f), std::floor(bounds.top + 10.f));
+	m_text.setFont(*p_font);
 
-	m_highlight.setPosition(m_bounds.left, m_bounds.top);
+	m_highlight.setPosition(bounds.left, bounds.top);
 }
 
 void EditBox::setText(const sf::String& text)

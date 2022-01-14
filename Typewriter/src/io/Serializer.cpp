@@ -5,8 +5,6 @@
 #include "OutPDF.h"
 #include "OutIMG.h"
 #include "system/Dialogs.h"
-#include "gui/Button.h"
-#include "gui/EditBox.h"
 
 #include "Application.h"
 
@@ -18,68 +16,19 @@ bool Serializer::saveFile(Application* app)
 	return outHTML(app->m_page, app->m_title, app->m_subtitle, outfile);
 }
 
-bool Serializer::saveAsFile(Application* app)
+bool Serializer::saveAsFile(Application* app, const std::string& outfile)
 {
-	sf::RectangleShape background;
-	background.setPosition(700, 300);
-	background.setSize(sf::Vector2f(520, 200));
-	background.setFillColor(sf::Color(40, 40, 60));
-	background.setOutlineThickness(3);
-	background.setOutlineColor(sf::Color(10, 10, 15));
-
-	EditBox nameBox;
-	nameBox.create(sf::FloatRect(720, 320, 480, 50));
-	nameBox.setFocused(true);
-
-	Button confirm;
-	confirm.create(sf::FloatRect(800, 400, 320, 40), "Save As");
-
-	sf::Event event;
-	while (app->m_window.waitEvent(event))
+	if (fs::exists("user/" + outfile + ".html"))
 	{
-		nameBox.handleEvent(event);
-		confirm.handleEvent(event);
+		// display message
+		return false;
+	}
 
-		switch (event.type)
-		{
-		case sf::Event::Closed:
-			app->m_window.close();
-			return false;
-
-		case sf::Event::MouseButtonPressed:
-			if (confirm.getClick())
-			{
-				if (nameBox.getText() == "")
-					break;
-
-				if (fs::exists("user/" + (std::string)nameBox.getText() + ".html"))
-				{
-					// display message
-					break;
-				}
-
-				if (outHTML(app->m_page, app->m_title, app->m_subtitle, "user/" + (std::string)nameBox.getText()))
-				{
-					app->m_newProject = false;
-					app->m_projName = nameBox.getText();
-					return true;
-				}
-				
-				// display message
-			}
-			break;
-
-		case sf::Event::KeyPressed:
-			if (event.key.code == sf::Keyboard::Escape)
-				return false;
-			break;
-		}
-
-		app->render();
-		app->m_window.draw(background);
-		app->m_window.draw(nameBox);
-		app->m_window.draw(confirm);
-		app->m_window.display();
+	if (outHTML(app->m_page, app->m_title, app->m_subtitle, "user/" + outfile))
+	{
+		app->m_newProject = false;
+		app->m_projName = outfile;
+		return true;
 	}
 
 	return false;

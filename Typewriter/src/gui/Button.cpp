@@ -24,7 +24,7 @@ void Button::create(sf::FloatRect bounds, const sf::String& text)
 	const sf::Vector2f center(m_bounds.left + m_bounds.width * 0.5f, m_bounds.top + m_bounds.height * 0.5f);
 	const sf::FloatRect textbounds = m_text.getGlobalBounds();
 
-	m_text.setPosition(std::floor(center.x - textbounds.width * 0.5f), std::floor(center.y - textbounds.height * 0.5f - 5));
+	m_text.setPosition(std::floor(center.x - textbounds.width * 0.5f), std::floor(center.y - textbounds.height * 0.5f - 5.f));
 }
 
 
@@ -38,6 +38,11 @@ void Button::handleEvent(const sf::Event& event)
 {
 	m_clicked = false;
 
+	if (m_hovered)
+		m_background.setFillColor(sf::Color(80, 80, 110));
+	else
+		m_background.setFillColor(sf::Color(65, 65, 90));
+
 	switch (event.type)
 	{
 	case sf::Event::MouseButtonPressed:
@@ -46,14 +51,9 @@ void Button::handleEvent(const sf::Event& event)
 			m_background.setFillColor(sf::Color(90, 90, 120));
 			m_clicked = true;
 		}
-		else
-			m_background.setFillColor(sf::Color(65, 65, 90));
 		break;
 	case sf::Event::MouseMoved:
-		if (m_bounds.contains(translate(event.mouseButton.x, event.mouseButton.y)))
-			m_background.setFillColor(sf::Color(80, 80, 110));
-		else
-			m_background.setFillColor(sf::Color(65, 65, 90));
+		m_hovered = m_bounds.contains(translate(event.mouseMove.x, event.mouseMove.y));
 		break;
 	}
 }

@@ -1,8 +1,6 @@
 #include "PCH.h"
 #include "FileList.h"
 
-#include "io/ioHTML.h"
-
 #include "io/Serializer.h"
 
 
@@ -35,15 +33,14 @@ void FileList::refreshButtons()
 		b.setView(m_view);
 	}
 
-	m_confirm.create(sf::FloatRect(720, 600, 200, 40), "Open");
+	m_confirm.create(sf::FloatRect(720, 450 + m_buttons.size() * 40, 200, 40), "Open");
 	m_confirm.setView(m_view);
-	m_delete.create(sf::FloatRect(1000, 600, 200, 40), "Delete");
+	m_delete.create(sf::FloatRect(1000, 450 + m_buttons.size() * 40, 200, 40), "Delete");
 	m_delete.setView(m_view);
 }
 
 
-FileList::FileList()
-	: m_view(sf::FloatRect(0, 0, 1920, 1000))
+FileList::FileList() : Group(sf::FloatRect(0, 0, 1920, 1000))
 {
 	refreshFiles();
 
@@ -64,7 +61,8 @@ void FileList::create(Application* parent)
 
 void FileList::setEnabled(bool enabled)
 {
-	m_enabled = enabled;
+	m_enableUpdate = enabled;
+	m_enableDisplay = enabled;
 
 	if (enabled)
 	{
@@ -73,15 +71,16 @@ void FileList::setEnabled(bool enabled)
 	}
 }
 
-bool FileList::getEnabled() const
+
+void FileList::removeFocus()
 {
-	return m_enabled;
+
 }
 
 
 void FileList::handleEvent(const sf::Event& event)
 {
-	if (m_enabled)
+	if (m_enableUpdate || event.type == sf::Event::Resized)
 	{
 		for (auto& button : m_buttons)
 			button.handleEvent(event);
@@ -103,16 +102,21 @@ void FileList::handleEvent(const sf::Event& event)
 				else
 					Serializer::importFile(p_parent, m_filenames[m_selected]);
 
-				m_enabled = false;
+				setEnabled(false);
 			}
 			if (m_delete.getClick())
 			{
 
 			}
 			break;
+		case sf::Event::KeyPressed:
+			if (event.key.code == sf::Keyboard::Escape)
+				setEnabled(false);
+			break;
+
 		case sf::Event::Resized:
-			m_view.setCenter(960, 490);
-			m_view.setSize((float)event.size.width, 980);
+			m_view.setCenter(960, (float)event.size.height * 0.5f);
+			m_view.setSize((float)event.size.width, (float)event.size.height);
 			break;
 		}
 	}
@@ -120,7 +124,7 @@ void FileList::handleEvent(const sf::Event& event)
 
 void FileList::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
-	if (m_enabled)
+	if (m_enableDisplay)
 	{
 		target.setView(m_view);
 

@@ -2,11 +2,12 @@
 
 #include "EditState.h"
 
-#include "gui/ToggleArray.h"
 #include "groups/TitlePage.h"
+#include "groups/ToggleArray.h"
 #include "groups/Page.h"
 
 #include "groups/FileList.h"
+#include "groups/SaveAs.h"
 
 
 class Application
@@ -21,14 +22,15 @@ private:
 	Page m_page;
 
 	FileList m_fileList;
+	SaveAs m_saveAs;
 
 	EditState m_state = EditState::None;
 
 	bool m_newProject = true;
 
 	sf::String m_projName = "empty";
-	sf::String m_title = "";
-	sf::String m_subtitle = "";
+	sf::String m_title = "[Title here]";
+	sf::String m_subtitle = "By [Author here]";
 
 	const static std::unordered_map<std::string, EditState> s_invstringLUT;
 	const static std::unordered_map<EditState, std::string> s_stringLUT;
@@ -42,6 +44,7 @@ private:
 	void mouseClick(const sf::Event& event);
 	void keyPressed(const sf::Event& event);
 	void textEntered(const sf::Event& event);
+	void resized(const sf::Event& event);
 
 	void render();
 

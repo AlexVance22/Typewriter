@@ -9,6 +9,7 @@ private:
 	sf::Text m_text;
 
 	bool m_clicked = false;
+	bool m_hovered = false;
 
 public:
 	Button();

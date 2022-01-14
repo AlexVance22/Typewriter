@@ -6,8 +6,6 @@
 
 #include "Exceptions.h"
 
-#include "gui/Widget.h"
-
 
 const std::unordered_map<std::string, EditState> Application::s_invstringLUT = {
 	{ "None",			EditState::None },
@@ -39,33 +37,33 @@ const std::unordered_map<EditState, EditState> Application::s_stateLUT = {
 
 void Application::handleEvent(const sf::Event& event)
 {
-	if (m_fileList.getEnabled())
-	{
-		m_fileList.handleEvent(event);
+	const bool editmode = !(m_fileList.getEnabled() || m_saveAs.getEnabled());
 
-		switch (event.type)
-		{
-		case sf::Event::Closed:
-			m_window.close();
-			break;
-		case sf::Event::Resized:
-			m_tools.handleEvent(event);
-			m_titlePage.handleEvent(event);
-			m_page.handleEvent(event);
-			break;
-		}
+	m_tools.setUpdateEnabled(editmode);
+	m_titlePage.setUpdateEnabled(editmode);
+	m_page.setUpdateEnabled(editmode);
+
+	m_tools.handleEvent(event);
+	m_titlePage.handleEvent(event);
+	m_page.handleEvent(event);
+
+	m_fileList.handleEvent(event);
+	m_saveAs.handleEvent(event);
+
+	switch (event.type)
+	{
+	case sf::Event::Closed:
+		m_window.close();
+		break;
+	case sf::Event::Resized:
+		resized(event);
+		break;
 	}
-	else
+	
+	if (editmode)
 	{
-		m_tools.handleEvent(event);
-		m_titlePage.handleEvent(event);
-		m_page.handleEvent(event);
-
 		switch (event.type)
 		{
-		case sf::Event::Closed:
-			m_window.close();
-			break;
 		case sf::Event::MouseButtonPressed:
 			mouseClick(event);
 			break;
@@ -114,7 +112,7 @@ void Application::controlKeys(sf::Keyboard::Key key)
 
 	case sf::Keyboard::S:
 		if (m_newProject)
-			Serializer::saveAsFile(this);
+			m_saveAs.setEnabled(true);
 		else
 			Serializer::saveFile(this);
 		break;
@@ -183,6 +181,12 @@ void Application::textEntered(const sf::Event& event)
 	m_subtitle = m_titlePage.getSubtitle();
 }
 
+void Application::resized(const sf::Event& event)
+{
+	if (event.size.width < 1010)
+		m_window.setSize(sf::Vector2u(1010, m_window.getSize().y));
+}
+
 
 void Application::render()
 {
@@ -191,7 +195,19 @@ void Application::render()
 	m_window.draw(m_titlePage);
 	m_window.draw(m_tools);
 
+	if (m_fileList.getEnabled() || m_saveAs.getEnabled())
+	{
+		sf::RectangleShape grey;
+		grey.setSize((sf::Vector2f)m_window.getSize());
+		grey.setPosition(0, 0);
+		grey.setFillColor(sf::Color(100, 100, 100, 100));
+
+		m_window.setView(sf::View((sf::Vector2f)m_window.getSize() * 0.5f, (sf::Vector2f)m_window.getSize()));
+		m_window.draw(grey);
+	}
+
 	m_window.draw(m_fileList);
+	m_window.draw(m_saveAs);
 }
 
 
@@ -212,28 +228,32 @@ Application::Application()
 	m_window.setFramerateLimit(60);
 
 	m_fileList.create(this);
+	m_saveAs.create(this);
+
+	m_titlePage.create();
 	m_tools.create({ "Scene", "Directorial", "Name", "Parenthetical", "Speech" }, 1920);
 
 	render();
 
+	m_page.addDivision(EditState::Scene);
+	m_state = EditState::Scene;
+	m_titlePage.setTitle("[Title here]");
+	m_titlePage.setSubtitle("By [Author here]");
+
 	m_titlePage.setEnabled(false);
+	m_saveAs.setEnabled(false);
 	m_fileList.setEnabled(true);
 
-	// window size independence --------------------> [ ] 95%
-	// clean up serialisation code -----------------> [ ] do with enable and menu popup
+	// window size independence --------------------> [x]
+	// clean up serialisation code -----------------> [x] (better)
 	// file io clickable buttons -------------------> [ ]
 	// option to delete from project view ----------> [ ] do with enable and menu popup
 	// make all side panels into toggleable groups -> [x]
 	// -> keyboard only / focus mode ---------------> [x]
+	// blurry text bug -----------------------------> [ ]
 	// character list ------------------------------> [ ]
 	//
 	// ... autocomplete names? regex?
-
-	// what do all groups need:
-	// 
-	// specific window resize behaviour -> [x]
-	// toggle on and logic --------------> [ ]
-	// toggle on off display ------------> [ ]
 }
 
 void Application::run()
