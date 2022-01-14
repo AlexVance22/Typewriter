@@ -8,3 +8,7 @@ bin-int/
 Typewriter.sln
 Typewriter/Typewriter.vcxproj
 Typewriter/Typewriter.vcxproj.filters
+
+*.html
+!empty.html
+!vendor/rapidxml-1.13/manual.html
