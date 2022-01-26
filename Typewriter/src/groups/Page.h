@@ -36,6 +36,7 @@ public:
 	void resetView();
 
 	void removeFocus() override;
+	bool isFocused() const;
 
 	void handleEvent(const sf::Event& event) override;
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;

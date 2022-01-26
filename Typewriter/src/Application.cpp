@@ -53,7 +53,8 @@ void Application::handleEvent(const sf::Event& event)
 	switch (event.type)
 	{
 	case sf::Event::Closed:
-		m_window.close();
+		if (m_saved)
+			m_window.close();
 		break;
 	case sf::Event::Resized:
 		resized(event);
@@ -88,26 +89,31 @@ void Application::controlKeys(sf::Keyboard::Key key)
 		m_tools.setSelected(0);
 		m_state = EditState::Scene;
 		m_page.setDivisionState(m_state);
+		m_saved = false;
 		break;
 	case sf::Keyboard::Num2:
 		m_tools.setSelected(1);
 		m_state = EditState::Directorial;
 		m_page.setDivisionState(m_state);
+		m_saved = false;
 		break;
 	case sf::Keyboard::Num3:
 		m_tools.setSelected(2);
 		m_state = EditState::Name;
 		m_page.setDivisionState(m_state);
+		m_saved = false;
 		break;
 	case sf::Keyboard::Num4:
 		m_tools.setSelected(3);
 		m_state = EditState::Parenthetical;
 		m_page.setDivisionState(m_state);
+		m_saved = false;
 		break;
 	case sf::Keyboard::Num5:
 		m_tools.setSelected(4);
 		m_state = EditState::Speech;
 		m_page.setDivisionState(m_state);
+		m_saved = false;
 		break;
 
 	case sf::Keyboard::S:
@@ -177,8 +183,17 @@ void Application::keyPressed(const sf::Event& event)
 
 void Application::textEntered(const sf::Event& event)
 {
-	m_title = m_titlePage.getTitle();
-	m_subtitle = m_titlePage.getSubtitle();
+	if (!sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
+	{
+		if (m_titlePage.isFocused())
+		{
+			m_title = m_titlePage.getTitle();
+			m_subtitle = m_titlePage.getSubtitle();
+			m_saved = false;
+		}
+		if (m_page.isFocused())
+			m_saved = false;
+	}
 }
 
 void Application::resized(const sf::Event& event)
@@ -192,6 +207,8 @@ void Application::render()
 {
 	m_window.clear(sf::Color(20, 20, 40));
 	m_window.draw(m_page);
+	if (!m_saved)
+		m_window.draw(m_alert);
 	m_window.draw(m_titlePage);
 	m_window.draw(m_tools);
 
@@ -226,14 +243,18 @@ Application::Application()
 	m_window.setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
 	m_window.setPosition(sf::Vector2i(0, 0));
 	m_window.setFramerateLimit(60);
+	ShowWindow(m_window.getSystemHandle(), SW_MAXIMIZE);
+
+	m_alert.setCharacterSize(20);
+	m_alert.setFont(m_font);
+	m_alert.setString("Unsaved");
+	m_alert.setStyle(sf::Text::Italic);
+	m_alert.setPosition(1650, 100);
 
 	m_fileList.create(this);
 	m_saveAs.create(this);
-
 	m_titlePage.create();
 	m_tools.create({ "Scene", "Directorial", "Name", "Parenthetical", "Speech" }, 1920);
-
-	render();
 
 	m_page.addDivision(EditState::Scene);
 	m_state = EditState::Scene;
@@ -247,10 +268,12 @@ Application::Application()
 	// window size independence --------------------> [x]
 	// clean up serialisation code -----------------> [x] (better)
 	// file io clickable buttons -------------------> [ ]
-	// option to delete from project view ----------> [ ] do with enable and menu popup
+	// option to delete from project view ----------> [ ]
 	// make all side panels into toggleable groups -> [x]
 	// -> keyboard only / focus mode ---------------> [x]
 	// blurry text bug -----------------------------> [ ]
+	// unsaved warning -----------------------------> [ ]
+	// copy cut paste ------------------------------> [x]
 	// character list ------------------------------> [ ]
 	//
 	// ... autocomplete names? regex?

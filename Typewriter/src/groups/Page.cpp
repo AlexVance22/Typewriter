@@ -175,6 +175,16 @@ void Page::removeFocus()
 	for (auto& div : m_divs)
 		div.setFocused(false);
 }
+bool Page::isFocused() const
+{
+	for (size_t i = 0; i < m_divs.size(); i++)
+	{
+		if (m_divs[i].isFocused())
+			return true;
+	}
+
+	return false;
+}
 
 void Page::handleEvent(const sf::Event& event)
 {
@@ -228,10 +238,10 @@ void Page::handleEvent(const sf::Event& event)
 			break;
 
 		case sf::Event::MouseWheelScrolled:
-			if (m_view.getCenter().y - 16.f * event.mouseWheelScroll.delta < 490)
+			if (m_view.getCenter().y - 32.f * event.mouseWheelScroll.delta < 490)
 				m_view.setCenter(m_view.getCenter().x, 490);
 			else
-				m_view.move(0.f, std::floor(-16.f * event.mouseWheelScroll.delta));
+				m_view.move(0.f, std::floor(-32.f * event.mouseWheelScroll.delta));
 
 			m_background.setPosition(465, m_view.getCenter().y - 490);
 			break;
@@ -239,6 +249,7 @@ void Page::handleEvent(const sf::Event& event)
 		case sf::Event::Resized:
 			m_view.setCenter(960, std::floor((float)event.size.height * 0.5f));
 			m_view.setSize((float)event.size.width, (float)event.size.height);
+			m_background.setSize(sf::Vector2f(990, (float)event.size.height));
 			break;
 		}
 	}

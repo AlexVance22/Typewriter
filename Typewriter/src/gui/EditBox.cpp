@@ -132,7 +132,7 @@ void EditBox::mouseClick(int x, int y, sf::Mouse::Button button)
 		{
 			setFocused(true);
 
-			setCursorToMouse(pos.x, pos.y);
+			setCursorToMouse((int)pos.x, (int)pos.y);
 			m_selection[0] = m_cursorPos;
 			m_selection[1] = m_cursorPos;
 		}
@@ -148,7 +148,7 @@ void EditBox::mouseMove(int x, int y)
 
 		if (m_bounds.contains(pos) && m_focused)
 		{
-			setCursorToMouse(pos.x, pos.y);
+			setCursorToMouse((int)pos.x, (int)pos.y);
 			m_selection[1] = m_cursorPos;
 			updateHighlight(m_selection[1], m_selection[0]);
 
@@ -164,7 +164,7 @@ void EditBox::mouseRelease(int x, int y, sf::Mouse::Button button)
 		m_held = false;
 		if (m_bounds.contains(pos) && m_focused)
 		{
-			setCursorToMouse(pos.x, pos.y);
+			setCursorToMouse((int)pos.x, (int)pos.y);
 			m_selection[1] = m_cursorPos;
 			if (m_selection[0] > m_selection[1])
 				std::swap(m_selection[0], m_selection[1]);

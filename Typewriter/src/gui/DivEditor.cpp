@@ -158,7 +158,7 @@ void DivEditor::enterChar(uint32_t character)
 }
 void DivEditor::keyPress(sf::Keyboard::Key key)
 {
-	if (m_focused)
+	if (m_focused && !m_held)
 	{
 		switch (key)
 		{
@@ -197,6 +197,58 @@ void DivEditor::keyPress(sf::Keyboard::Key key)
 				break;
 			}
 			else throw OutOfRange(1);
+
+		case sf::Keyboard::X:
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
+			{
+				sf::Clipboard::setString(m_selected);
+
+				if (m_selection[0] != m_selection[1])
+				{
+					m_string.erase(m_selection[0], m_selection[1] - m_selection[0]);
+					m_cursorPos = m_selection[0];
+					m_selection[1] = m_cursorPos;
+					updateSelection();
+
+					setCursorPosition(m_cursorPos);
+
+					wrap();
+				}
+			}
+			break;
+		case sf::Keyboard::C:
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
+				sf::Clipboard::setString(m_selected);
+			break;
+		case sf::Keyboard::V:
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
+			{
+				std::string copied = sf::Clipboard::getString();
+				if (copied.empty())
+					return;
+
+				switch (m_case)
+				{
+				case Style::Input:
+					for (auto& c : copied)
+						c += 32 * (c > 64 && c < 91);
+					break;
+				case Style::Upper:
+					for (auto& c : copied)
+						c -= 32 * (c > 96 && c < 123);
+					break;
+				}
+
+				m_string.insert(m_cursorPos, copied);
+				m_cursorPos += copied.size();
+				
+				wrap();
+
+				setCursorPosition(m_cursorPos);
+				m_selection[0] = m_cursorPos;
+				m_selection[1] = m_cursorPos;
+			}
+			break;
 		}
 	}
 }
@@ -211,7 +263,7 @@ void DivEditor::mouseClick(int x, int y, sf::Mouse::Button button)
 		{
 			setFocused(true);
 
-			setCursorToMouse(pos.x, pos.y);
+			setCursorToMouse((int)pos.x, (int)pos.y);
 			m_selection[0] = m_cursorPos;
 			m_selection[1] = m_cursorPos;
 		}
@@ -227,7 +279,7 @@ void DivEditor::mouseMove(int x, int y)
 
 		if (m_bounds.contains(pos) && m_focused)
 		{
-			setCursorToMouse(pos.x, pos.y);
+			setCursorToMouse((int)pos.x, (int)pos.y);
 			m_selection[1] = m_cursorPos;
 			updateHighlight(m_selection[1], m_selection[0]);
 
@@ -243,7 +295,7 @@ void DivEditor::mouseRelease(int x, int y, sf::Mouse::Button button)
 		m_held = false;
 		if (m_bounds.contains(pos) && m_focused)
 		{
-			setCursorToMouse(pos.x, pos.y);
+			setCursorToMouse((int)pos.x, (int)pos.y);
 			m_selection[1] = m_cursorPos;
 			if (m_selection[0] > m_selection[1])
 				std::swap(m_selection[0], m_selection[1]);
@@ -254,7 +306,7 @@ void DivEditor::mouseRelease(int x, int y, sf::Mouse::Button button)
 
 void DivEditor::wrap()
 {
-#define MAX_LINE_SIZE 64
+	constexpr size_t MAX_LINE_SIZE = 64;
 
 	m_charsPerLine = charsPerLine();
 

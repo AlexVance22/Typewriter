@@ -13,7 +13,12 @@ bool Serializer::saveFile(Application* app)
 {
 	const std::string outfile = "user/" + app->m_projName;
 	
-	return outHTML(app->m_page, app->m_title, app->m_subtitle, outfile);
+	if (outHTML(app->m_page, app->m_title, app->m_subtitle, outfile))
+	{
+		app->m_saved = true;
+		return true;
+	}
+	else return false;
 }
 
 bool Serializer::saveAsFile(Application* app, const std::string& outfile)
@@ -28,6 +33,7 @@ bool Serializer::saveAsFile(Application* app, const std::string& outfile)
 	{
 		app->m_newProject = false;
 		app->m_projName = outfile;
+		app->m_saved = true;
 		return true;
 	}
 
@@ -46,7 +52,9 @@ bool Serializer::exportFile(Application* app)
 	std::string source = "user/" + app->m_projName;
 	std::string output = outpath.replace_extension().generic_u8string();
 
-	if (!outHTML(app->m_page, app->m_title, app->m_subtitle, source))
+	if (outHTML(app->m_page, app->m_title, app->m_subtitle, source))
+		app->m_saved = true;
+	else
 		return false;
 
 	switch (outtype)
@@ -83,6 +91,7 @@ bool Serializer::importFile(Application* app, const std::string& infile)
 		app->m_titlePage.setTitle(app->m_title);
 		app->m_titlePage.setSubtitle(app->m_subtitle);
 		app->m_titlePage.setEnabled(true);
+		app->m_saved = true;
 		return true;
 	}
 	return false;

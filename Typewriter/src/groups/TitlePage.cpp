@@ -14,8 +14,8 @@ TitlePage::TitlePage() : Group(sf::FloatRect(0, 0, 1920, 980))
 
 void TitlePage::create()
 {
-	m_titleEditor.create(sf::FloatRect(20, 100, 425, 50));
-	m_subEditor.create(sf::FloatRect(20, 200, 425, 50));
+	m_titleEditor.create(sf::FloatRect(15, 100, 425, 50));
+	m_subEditor.create(sf::FloatRect(15, 200, 425, 50));
 }
 
 void TitlePage::setTitle(const sf::String& title)
@@ -41,6 +41,10 @@ void TitlePage::removeFocus()
 	m_titleEditor.setFocused(false);
 	m_subEditor.setFocused(false);
 }
+bool TitlePage::isFocused() const
+{
+	return m_titleEditor.getFocused() || m_subEditor.getFocused();
+}
 
 void TitlePage::handleEvent(const sf::Event& event)
 {
@@ -53,6 +57,7 @@ void TitlePage::handleEvent(const sf::Event& event)
 		{
 		case sf::Event::Resized:
 			m_view.reset(sf::FloatRect(0, 0, (float)event.size.width, (float)event.size.height));
+			m_background.setSize(sf::Vector2f(455, (float)event.size.height));
 			break;
 		}
 	}

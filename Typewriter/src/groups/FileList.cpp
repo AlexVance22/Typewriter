@@ -33,9 +33,9 @@ void FileList::refreshButtons()
 		b.setView(m_view);
 	}
 
-	m_confirm.create(sf::FloatRect(720, 450 + m_buttons.size() * 40, 200, 40), "Open");
+	m_confirm.create(sf::FloatRect(720.f, 450.f + m_buttons.size() * 40.f, 200.f, 40.f), "Open");
 	m_confirm.setView(m_view);
-	m_delete.create(sf::FloatRect(1000, 450 + m_buttons.size() * 40, 200, 40), "Delete");
+	m_delete.create(sf::FloatRect(1000.f, 450.f + m_buttons.size() * 40.f, 200.f, 40.f), "Delete");
 	m_delete.setView(m_view);
 }
 

@@ -70,7 +70,7 @@ static void dumpHeader(std::ofstream& f, fs::path outfile, bool standalone)
 
 bool outHTML(const Page& page, const sf::String& title, const sf::String& subtitle, const fs::path& outfile, bool standalone)
 {
-	const std::string outhtml = outfile.generic_u8string() + ".html";
+	const std::string outhtml = outfile.generic_string() + ".html";
 
 	if (standalone)
 	{

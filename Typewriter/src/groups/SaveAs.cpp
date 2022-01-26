@@ -60,6 +60,8 @@ void SaveAs::handleEvent(const sf::Event& event)
 					break;
 
 				Serializer::saveAsFile(p_parent, m_nameBox.getText());
+
+				setEnabled(false);
 			}
 			break;
 

@@ -21,11 +21,14 @@ private:
 	ToggleArray m_tools;
 	Page m_page;
 
+	sf::Text m_alert;
+
 	FileList m_fileList;
 	SaveAs m_saveAs;
 
 	EditState m_state = EditState::None;
 
+	bool m_saved = true;
 	bool m_newProject = true;
 
 	sf::String m_projName = "empty";
