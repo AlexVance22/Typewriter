@@ -2,7 +2,9 @@
 #include "Dialogs.h"
 
 
-File openFileName(HWND handle, const char* filter, const std::string& defaultname)
+#if 1
+
+File openFileName(sf::WindowHandle handle, const char* filter, const std::string& defaultname)
 {
 	OPENFILENAMEA ofn;
 	CHAR szFile[260] = { 0 };
@@ -24,7 +26,7 @@ File openFileName(HWND handle, const char* filter, const std::string& defaultnam
 	return { "", 0 };
 }
 
-File saveFileName(HWND handle, const char* filter, const std::string& defaultname)
+File saveFileName(sf::WindowHandle handle, const char* filter, const std::string& defaultname)
 {
 	OPENFILENAMEA ofn;
 	CHAR szFile[260] = { 0 };
@@ -45,3 +47,19 @@ File saveFileName(HWND handle, const char* filter, const std::string& defaultnam
 
 	return { "", 0 };
 }
+
+
+#else
+
+File openFileName(sf::WindowHandle handle, const char* filter, const std::string& defaultname)
+{
+
+}
+
+File saveFileName(sf::WindowHandle handle, const char* filter, const std::string& defaultname)
+{
+
+}
+
+
+#endif

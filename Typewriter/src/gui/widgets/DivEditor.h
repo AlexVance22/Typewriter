@@ -2,7 +2,7 @@
 
 #include "Widget.h"
 
-#include "EditState.h"
+#include "core/EditState.h"
 
 
 class DivEditor : public Widget
@@ -19,7 +19,7 @@ public:
 
 private:
 	Style m_case = Style::Input;
-	sf::String m_string;
+	std::string m_string;
 	sf::Text m_text;
 
 	sf::FloatRect m_padding;
@@ -32,7 +32,7 @@ private:
 
 	std::vector<sf::RectangleShape> m_highlight;
 	size_t m_selection[2] = { 0 };
-	sf::String m_selected;
+	std::string m_selected;
 
 	bool m_focused = false;
 	bool m_resized = false;
@@ -61,7 +61,7 @@ public:
 	DivEditor();
 
 	void setText(const sf::String& text);
-	const sf::String& getText() const;
+	const std::string& getText() const;
 	void setTextStyle(Style textstyle, Style textcase);
 
 	void setBoxPosition(sf::Vector2f position);
@@ -81,7 +81,7 @@ public:
 	bool isFocused() const;
 
 	void setCursorPosition(size_t pos);
-	const sf::String& getSelectedText() const;
+	const std::string& getSelectedText() const;
 	size_t getEndOfString() const;
 
 	void handleEvent(const sf::Event& event);

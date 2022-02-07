@@ -6,13 +6,14 @@
 
 bool outPDF(const std::string& infile, const std::string& outfile)
 {
-	std::string source = infile + ".html";
-	std::string output = outfile + ".pdf";
+	const std::string source = infile + ".html";
+	const std::string output = outfile + ".pdf";
 
-	ConvertHTML::pdfInputFile(source.c_str());
-	ConvertHTML::pdfOutputFile(output.c_str());
-	ConvertHTML::pdfSetting("colorMode", "Grayscale");
-	ConvertHTML::pdfSetting("web.userStyleSheet", "res/style.css", false);
+	const bool success = ConvertHTML::pdfInputFile(source.c_str()) &&
+						ConvertHTML::pdfOutputFile(output.c_str()) &&
+						ConvertHTML::pdfSetting("colorMode", "Grayscale") &&
+						ConvertHTML::pdfSetting("web.userStyleSheet", "res/style.css", false) &&
+						ConvertHTML::pdfConvert();
 
-	return ConvertHTML::pdfConvert();
+	return success;
 }

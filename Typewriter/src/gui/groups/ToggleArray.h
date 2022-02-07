@@ -2,7 +2,7 @@
 
 #include "Group.h"
 
-#include "gui/Widget.h"
+#include "../widgets/Widget.h"
 
 
 class ToggleButton : public Widget

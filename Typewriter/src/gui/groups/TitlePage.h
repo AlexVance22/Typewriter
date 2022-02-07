@@ -2,7 +2,7 @@
 
 #include "Group.h"
 
-#include "gui/EditBox.h"
+#include "../widgets/EditBox.h"
 
 
 class TitlePage : public Group
@@ -16,11 +16,11 @@ public:
 
 	void create();
 
-	void setTitle(const sf::String& title);
-	void setSubtitle(const sf::String& subtitle);
+	void setTitle(const std::string& title);
+	void setSubtitle(const std::string& subtitle);
 
-	const sf::String& getTitle() const;
-	const sf::String& getSubtitle() const;
+	const std::string& getTitle() const;
+	const std::string& getSubtitle() const;
 
 	void removeFocus() override;
 	bool isFocused() const;

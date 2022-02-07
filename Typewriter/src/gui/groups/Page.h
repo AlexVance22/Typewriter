@@ -2,8 +2,8 @@
 
 #include "Group.h"
 
-#include "EditState.h"
-#include "gui/DivEditor.h"
+#include "core/EditState.h"
+#include "../widgets/DivEditor.h"
 
 
 class Page : public Group

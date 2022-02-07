@@ -1,7 +1,7 @@
 #include "PCH.h"
 #include "DivEditor.h"
 
-#include "Exceptions.h"
+#include "core/Exceptions.h"
 
 
 size_t DivEditor::charsPerLine() const
@@ -11,10 +11,12 @@ size_t DivEditor::charsPerLine() const
 	const float result = linewidth / charwidth;
 	return (size_t)std::max(result, 1.f);
 }
+
 float DivEditor::getMinHeight() const
 {
 	return 23.f * m_lineSize.size() + m_padding.top + m_padding.height;
 }
+
 
 void DivEditor::setCursorToMouse(int x, int y)
 {
@@ -35,7 +37,7 @@ void DivEditor::setCursorToMouse(int x, int y)
 	const sf::Vector2f displaypos(charindex * width - 1, lineindex * height + 4);
 	m_cursor.setPosition(m_text.getPosition() + displaypos);
 
-	m_cursorPos = std::min(displayindex, m_string.getSize());
+	m_cursorPos = std::min(displayindex, m_string.size());
 }
 
 void DivEditor::updateSelection()
@@ -50,9 +52,10 @@ void DivEditor::updateSelection()
 	if (m_selection[0] > m_selection[1])
 		std::swap(m_selection[0], m_selection[1]);
 
-	m_selected = m_string.substring(m_selection[0], m_selection[1] - m_selection[0]);
+	m_selected = m_string.substr(m_selection[0], m_selection[1] - m_selection[0]);
 	updateHighlight(m_selection[0], m_selection[1]);
 }
+
 void DivEditor::updateHighlight(size_t start, size_t end)
 {
 	if (start == end)
@@ -87,6 +90,7 @@ void DivEditor::updateHighlight(size_t start, size_t end)
 	m_highlight.back().setSize(sf::Vector2f(pos2.x - m_highlight.back().getPosition().x, 20));
 }
 
+
 void DivEditor::enterChar(uint32_t character)
 {
 	if (m_focused && !m_held)
@@ -112,7 +116,7 @@ void DivEditor::enterChar(uint32_t character)
 
 		if (character == 0x8) // backspace
 		{
-			if (m_string.getSize() == 0)
+			if (m_string.size() == 0)
 				return;
 
 			m_cursorPos--;
@@ -120,7 +124,7 @@ void DivEditor::enterChar(uint32_t character)
 
 			m_string.erase(m_cursorPos, 1);
 
-			if (m_cursorPos == m_string.getSize() && m_lineSize.back() > 0)
+			if (m_cursorPos == m_string.size() && m_lineSize.back() > 0)
 				m_text.setString(m_text.getString().substring(0, m_text.getString().getSize() - 1));
 			else
 				wrap();
@@ -139,12 +143,12 @@ void DivEditor::enterChar(uint32_t character)
 				break;
 			}
 
-			m_string.insert(m_cursorPos, character);
+			m_string.insert(m_string.begin() + m_cursorPos, character);
 
 			m_cursorPos++;
 			m_lineSize.back()++;
 
-			if (m_cursorPos == m_string.getSize() && m_lineSize.back() < m_charsPerLine)
+			if (m_cursorPos == m_string.size() && m_lineSize.back() < m_charsPerLine)
 				m_text.setString(m_text.getString() + character);
 			else
 				wrap();
@@ -156,6 +160,7 @@ void DivEditor::enterChar(uint32_t character)
 		m_selection[1] = m_cursorPos;
 	}
 }
+
 void DivEditor::keyPress(sf::Keyboard::Key key)
 {
 	if (m_focused && !m_held)
@@ -172,7 +177,7 @@ void DivEditor::keyPress(sf::Keyboard::Key key)
 			else throw OutOfRange(-1);
 
 		case sf::Keyboard::Right:
-			if (m_cursorPos < m_string.getSize())
+			if (m_cursorPos < m_string.size())
 			{
 				m_cursorPos++;
 				setCursorPosition(m_cursorPos);
@@ -190,7 +195,7 @@ void DivEditor::keyPress(sf::Keyboard::Key key)
 			else throw OutOfRange(-1);
 
 		case sf::Keyboard::Down:
-			if (m_cursorPos < m_string.getSize() - m_charsPerLine)
+			if (m_cursorPos < m_string.size() - m_charsPerLine)
 			{
 				m_cursorPos += m_charsPerLine;
 				setCursorPosition(m_cursorPos);
@@ -252,6 +257,7 @@ void DivEditor::keyPress(sf::Keyboard::Key key)
 		}
 	}
 }
+
 void DivEditor::mouseClick(int x, int y, sf::Mouse::Button button)
 {
 	if (button == sf::Mouse::Left)
@@ -271,6 +277,7 @@ void DivEditor::mouseClick(int x, int y, sf::Mouse::Button button)
 			setFocused(false);
 	}
 }
+
 void DivEditor::mouseMove(int x, int y)
 {
 	if (m_held)
@@ -286,6 +293,7 @@ void DivEditor::mouseMove(int x, int y)
 		}
 	}
 }
+
 void DivEditor::mouseRelease(int x, int y, sf::Mouse::Button button)
 {
 	if (button == sf::Mouse::Left)
@@ -303,6 +311,7 @@ void DivEditor::mouseRelease(int x, int y, sf::Mouse::Button button)
 		}
 	}
 }
+
 
 void DivEditor::wrap()
 {
@@ -398,6 +407,7 @@ void DivEditor::wrap()
 	setCursorPosition(m_cursorPos);
 }
 
+
 DivEditor::DivEditor()
 {
 	m_cursor.setPosition(m_text.getPosition());
@@ -409,6 +419,7 @@ DivEditor::DivEditor()
 	m_text.setFont(*p_font);
 }
 
+
 void DivEditor::setText(const sf::String& text)
 {
 	m_string = text;
@@ -417,10 +428,12 @@ void DivEditor::setText(const sf::String& text)
 
 	setCursorPosition(text.getSize());
 }
-const sf::String& DivEditor::getText() const
+
+const std::string& DivEditor::getText() const
 {
 	return m_string;
 }
+
 void DivEditor::setTextStyle(Style textstyle, Style textcase)
 {
 	m_text.setStyle((uint32_t)textstyle);
@@ -455,6 +468,7 @@ void DivEditor::setTextStyle(Style textstyle, Style textcase)
 	wrap();
 }
 
+
 void DivEditor::setBoxPosition(sf::Vector2f position)
 {
 	m_bounds.left = position.x;
@@ -464,6 +478,7 @@ void DivEditor::setBoxPosition(sf::Vector2f position)
 
 	setCursorPosition(m_cursorPos);
 }
+
 void DivEditor::setBoxSize(sf::Vector2f size)
 {
 	m_bounds.width = size.x;
@@ -473,6 +488,7 @@ void DivEditor::setBoxSize(sf::Vector2f size)
 
 	setCursorPosition(m_cursorPos);
 }
+
 void DivEditor::setInnerPadding(float left, float top, float right, float bottom)
 {
 	m_padding.left = left;
@@ -487,32 +503,39 @@ void DivEditor::setInnerPadding(float left, float top, float right, float bottom
 	setCursorPosition(m_cursorPos);
 }
 
+
 sf::Vector2f DivEditor::getBoxPosition() const
 {
 	return sf::Vector2f(m_bounds.left, m_bounds.top);
 }
+
 sf::Vector2f DivEditor::getBoxSize() const
 {
 	return sf::Vector2f(m_bounds.width, m_bounds.height);
 }
 
+
 void DivEditor::resizeToFit()
 {
 	m_bounds.height = getMinHeight();
 }
+
 bool DivEditor::isResized() const
 {
 	return m_resized;
 }
 
+
 void DivEditor::setState(EditState state)
 {
 	m_state = state;
 }
+
 EditState DivEditor::getState() const
 {
 	return m_state;
 }
+
 
 void DivEditor::setFocused(bool focus)
 {
@@ -526,36 +549,41 @@ void DivEditor::setFocused(bool focus)
 		m_highlight.clear();
 	}
 }
+
 bool DivEditor::isFocused() const
 {
 	return m_focused;
 }
 
+
 void DivEditor::setCursorPosition(size_t pos)
 {
-	if (m_string.isEmpty())
+	if (m_string.empty())
 		m_cursorPos = 0;
-	else if (pos <= m_string.getSize())
+	else if (pos <= m_string.size())
 		m_cursorPos = pos;
 	else
-		m_cursorPos = m_string.getSize();
+		m_cursorPos = m_string.size();
 
 	m_selection[0] = m_cursorPos;
 	m_selection[1] = m_cursorPos;
 
-	if (m_cursorPos % m_charsPerLine == 0 && m_cursorPos == m_string.getSize())
+	if (m_cursorPos % m_charsPerLine == 0 && m_cursorPos == m_string.size())
 		m_cursor.setPosition(m_text.findCharacterPos(m_cursorPos - 1));
 	else
 		m_cursor.setPosition(m_text.findCharacterPos(m_cursorPos));
 }
-const sf::String& DivEditor::getSelectedText() const
+
+const std::string& DivEditor::getSelectedText() const
 {
 	return m_selected;
 }
+
 size_t DivEditor::getEndOfString() const
 {
-	return m_string.getSize();
+	return m_string.size();
 }
+
 
 void DivEditor::handleEvent(const sf::Event& event)
 {
@@ -580,6 +608,7 @@ void DivEditor::handleEvent(const sf::Event& event)
 		break;
 	}
 }
+
 void DivEditor::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
 	/*

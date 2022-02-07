@@ -1,8 +1,8 @@
 #pragma once
 
-class Page;
+struct Document;
 
 
-bool inHTML(Page& page, sf::String& title, sf::String& subtitle, const char* infile);
+[[nodiscard]] Document inHTML(char* source);
 
-bool outHTML(const Page& page, const sf::String& title, const sf::String& subtitle, const fs::path& outfile, bool standalone = false);
+[[nodiscard]] std::string outHTML(const Document& doc, const std::string& filename);

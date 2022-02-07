@@ -1,13 +1,10 @@
 #pragma once
 
-class Application;
+struct AppData;
+struct Document;
+struct File;
 
 
-class Serializer
-{
-public:
-	static bool saveFile(Application* app);
-	static bool saveAsFile(Application* app, const std::string& outfile);
-	static bool exportFile(Application* app);
-	static bool importFile(Application* app, const std::string& infile = "");
-};
+void saveFile(AppData& app, const Document& doc);
+void exportFile(AppData& app, const Document& doc, File outfile);
+void importFile(AppData& app, Document& doc);

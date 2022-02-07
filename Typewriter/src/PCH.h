@@ -5,6 +5,7 @@
 #include <sstream>
 
 #include <filesystem>
+#include <functional>
 #include <exception>
 #include <memory>
 

@@ -12,39 +12,47 @@ TitlePage::TitlePage() : Group(sf::FloatRect(0, 0, 1920, 980))
 	m_background.setFillColor(sf::Color(70, 70, 100, 70));
 }
 
+
 void TitlePage::create()
 {
 	m_titleEditor.create(sf::FloatRect(15, 100, 425, 50));
 	m_subEditor.create(sf::FloatRect(15, 200, 425, 50));
 }
 
-void TitlePage::setTitle(const sf::String& title)
+
+void TitlePage::setTitle(const std::string& title)
 {
 	m_titleEditor.setText(title);
 }
-void TitlePage::setSubtitle(const sf::String& subtitle)
+
+void TitlePage::setSubtitle(const std::string& subtitle)
 {
 	m_subEditor.setText(subtitle);
 }
 
-const sf::String& TitlePage::getTitle() const
+
+const std::string& TitlePage::getTitle() const
 {
 	return m_titleEditor.getText();
 }
-const sf::String& TitlePage::getSubtitle() const
+
+const std::string& TitlePage::getSubtitle() const
 {
 	return m_subEditor.getText();
 }
+
 
 void TitlePage::removeFocus()
 {
 	m_titleEditor.setFocused(false);
 	m_subEditor.setFocused(false);
 }
+
 bool TitlePage::isFocused() const
 {
 	return m_titleEditor.getFocused() || m_subEditor.getFocused();
 }
+
 
 void TitlePage::handleEvent(const sf::Event& event)
 {
@@ -56,12 +64,13 @@ void TitlePage::handleEvent(const sf::Event& event)
 		switch (event.type)
 		{
 		case sf::Event::Resized:
-			m_view.reset(sf::FloatRect(0, 0, (float)event.size.width, (float)event.size.height));
-			m_background.setSize(sf::Vector2f(455, (float)event.size.height));
+			m_view.reset(sf::FloatRect(0, 0, static_cast<float>(event.size.width), static_cast<float>(event.size.height)));
+			m_background.setSize(sf::Vector2f(455, static_cast<float>(event.size.height)));
 			break;
 		}
 	}
 }
+
 void TitlePage::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
 	if (m_enableDisplay)

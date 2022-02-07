@@ -6,7 +6,7 @@
 class EditBox : public Widget
 {
 private:
-	sf::String m_string;
+	std::string m_string;
 	sf::Text m_text;
 
 	sf::RectangleShape m_cursor;
@@ -14,7 +14,7 @@ private:
 
 	sf::RectangleShape m_highlight;
 	size_t m_selection[2] = { 0 };
-	sf::String m_selected;
+	std::string m_selected;
 
 	bool m_focused = false;
 	bool m_held = false;
@@ -36,11 +36,12 @@ public:
 
 	void create(sf::FloatRect bounds);
 
-	void setText(const sf::String& text);
-	const sf::String& getText() const;
+	void setText(const std::string& text);
+	void setText(std::string&& text);
+	const std::string& getText() const;
 
 	void setCursorPosition(size_t pos);
-	const sf::String& getSelectedText() const;
+	const std::string& getSelectedText() const;
 
 	void setFocused(bool focus);
 	bool getFocused() const;

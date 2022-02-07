@@ -9,12 +9,12 @@ void EditBox::setCursorToMouse(int x, int y)
 	constexpr float width = 20.f * 0.6f;
 	constexpr float height = 20.f + 3.f;
 
-	const size_t charindex = (relative.x > m_string.getSize() * width) ? m_string.getSize() : (size_t)(relative.x / width + 0.5f);
+	const size_t charindex = (relative.x > m_string.size() * width) ? m_string.size() : (size_t)(relative.x / width + 0.5f);
 
 	const sf::Vector2f displaypos(charindex * width - 1, 4);
 	m_cursor.setPosition(m_text.getPosition() + displaypos);
 
-	m_cursorPos = std::min(charindex, m_string.getSize());
+	m_cursorPos = std::min(charindex, m_string.size());
 }
 
 void EditBox::updateSelection()
@@ -29,9 +29,10 @@ void EditBox::updateSelection()
 	if (m_selection[0] > m_selection[1])
 		std::swap(m_selection[0], m_selection[1]);
 
-	m_selected = m_string.substring(m_selection[0], m_selection[1] - m_selection[0]);
+	m_selected = m_string.substr(m_selection[0], m_selection[1] - m_selection[0]);
 	updateHighlight(m_selection[0], m_selection[1]);
 }
+
 void EditBox::updateHighlight(size_t start, size_t end)
 {
 	if (start == end)
@@ -49,6 +50,7 @@ void EditBox::updateHighlight(size_t start, size_t end)
 	m_highlight.setPosition(m_text.getPosition() + sf::Vector2f(start * 20.f * 0.6f, 3.f));
 	m_highlight.setSize(sf::Vector2f((end - start) * 20.f * 0.6f, 20.f));
 }
+
 
 void EditBox::enterChar(uint32_t character)
 {
@@ -75,7 +77,7 @@ void EditBox::enterChar(uint32_t character)
 
 		if (character == 0x8) // backspace
 		{
-			if (m_string.getSize() == 0)
+			if (m_string.size() == 0)
 				return;
 
 			m_cursorPos--;
@@ -86,7 +88,7 @@ void EditBox::enterChar(uint32_t character)
 		}
 		else
 		{
-			m_string.insert(m_cursorPos, character);
+			m_string.insert(m_string.begin() + m_cursorPos, character);
 			m_cursorPos++;
 			m_text.setString(m_string);
 
@@ -97,6 +99,7 @@ void EditBox::enterChar(uint32_t character)
 		m_selection[1] = m_cursorPos;
 	}
 }
+
 void EditBox::keyPress(sf::Keyboard::Key key)
 {
 	if (m_focused)
@@ -112,7 +115,7 @@ void EditBox::keyPress(sf::Keyboard::Key key)
 			break;
 
 		case sf::Keyboard::Right:
-			if (m_cursorPos < m_string.getSize())
+			if (m_cursorPos < m_string.size())
 			{
 				m_cursorPos++;
 				setCursorPosition(m_cursorPos);
@@ -121,6 +124,7 @@ void EditBox::keyPress(sf::Keyboard::Key key)
 		}
 	}
 }
+
 void EditBox::mouseClick(int x, int y, sf::Mouse::Button button)
 {
 	if (button == sf::Mouse::Left)
@@ -140,6 +144,7 @@ void EditBox::mouseClick(int x, int y, sf::Mouse::Button button)
 			setFocused(false);
 	}
 }
+
 void EditBox::mouseMove(int x, int y)
 {
 	if (m_held)
@@ -155,6 +160,7 @@ void EditBox::mouseMove(int x, int y)
 		}
 	}
 }
+
 void EditBox::mouseRelease(int x, int y, sf::Mouse::Button button)
 {
 	if (button == sf::Mouse::Left)
@@ -173,6 +179,7 @@ void EditBox::mouseRelease(int x, int y, sf::Mouse::Button button)
 	}
 }
 
+
 EditBox::EditBox()
 {
 	m_background.setFillColor(sf::Color(10, 10, 15));
@@ -190,6 +197,7 @@ EditBox::EditBox()
 	m_highlight.setFillColor(sf::Color(100, 80, 100));
 }
 
+
 void EditBox::create(sf::FloatRect bounds)
 {
 	m_bounds = bounds;
@@ -203,35 +211,47 @@ void EditBox::create(sf::FloatRect bounds)
 	m_highlight.setPosition(bounds.left, bounds.top);
 }
 
-void EditBox::setText(const sf::String& text)
+
+void EditBox::setText(const std::string& text)
 {
 	m_string = text;
 	m_text.setString(text);
-	setCursorPosition(m_string.getSize());
+	setCursorPosition(m_string.size());
 }
-const sf::String& EditBox::getText() const
+
+void EditBox::setText(std::string&& text)
+{
+	m_string = std::move(text);
+	m_text.setString(text);
+	setCursorPosition(m_string.size());
+}
+
+const std::string& EditBox::getText() const
 {
 	return m_string;
 }
 
+
 void EditBox::setCursorPosition(size_t pos)
 {
-	if (m_string.isEmpty())
+	if (m_string.empty())
 		m_cursorPos = 0;
-	else if (pos <= m_string.getSize())
+	else if (pos <= m_string.size())
 		m_cursorPos = pos;
 	else
-		m_cursorPos = m_string.getSize();
+		m_cursorPos = m_string.size();
 
 	m_selection[0] = m_cursorPos;
 	m_selection[1] = m_cursorPos;
 
 	m_cursor.setPosition(m_text.getPosition() + sf::Vector2f(20.f * 0.6f * m_cursorPos, 3.f));
 }
-const sf::String& EditBox::getSelectedText() const
+
+const std::string& EditBox::getSelectedText() const
 {
 	return m_selected;
 }
+
 
 void EditBox::setFocused(bool focus)
 {
@@ -245,10 +265,12 @@ void EditBox::setFocused(bool focus)
 		m_highlight.setSize(sf::Vector2f(0.f, 20.f));
 	}
 }
+
 bool EditBox::getFocused() const
 {
 	return m_focused;
 }
+
 
 void EditBox::handleEvent(const sf::Event& event)
 {
@@ -271,6 +293,7 @@ void EditBox::handleEvent(const sf::Event& event)
 		break;
 	}
 }
+
 void EditBox::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
 	target.draw(m_background);

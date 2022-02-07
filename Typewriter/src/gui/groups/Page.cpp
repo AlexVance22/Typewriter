@@ -1,7 +1,7 @@
 #include "PCH.h"
 #include "Page.h"
 
-#include "Exceptions.h"
+#include "core/Exceptions.h"
 
 
 constexpr static float inToPx(float in)
@@ -20,6 +20,7 @@ void Page::reallign()
 		lasttop += div.getBoxSize().y;
 	}
 }
+
 void Page::refocus()
 {
 	for (size_t i = 0; i < m_divs.size(); i++)
@@ -40,12 +41,14 @@ bool Page::findFocused()
 	return false;
 }
 
+
 Page::Page() : Group(sf::FloatRect(0, 0, 1920, 980))
 {
 	m_background.setPosition(465, m_view.getCenter().y - 490.f);
 	m_background.setSize(sf::Vector2f(990, 980));
 	m_background.setFillColor(sf::Color(255, 255, 255));
 }
+
 
 void Page::addDivision(EditState state)
 {
@@ -88,6 +91,7 @@ void Page::addDivision(EditState state)
 	reallign();
 	refocus();
 }
+
 void Page::setDivisionState(EditState state)
 {
 	DivEditor& area = m_divs[m_active];
@@ -121,11 +125,12 @@ void Page::setDivisionState(EditState state)
 
 	reallign();
 }
+
 void Page::eraseDivision()
 {
 	auto removed = m_divs.begin() + m_active;
 
-	if (m_active == 0 || removed->getText().getSize() != 0)
+	if (m_active == 0 || removed->getText().size() != 0)
 		return;
 
 	m_active--;
@@ -138,43 +143,53 @@ void Page::eraseDivision()
 	reallign();
 }
 
+
 void Page::clear()
 {
 	m_divs.clear();
 	m_active = 0;
 }
+
+
 std::vector<DivEditor>::const_iterator Page::begin() const
 {
 	return m_divs.begin();
 }
+
 std::vector<DivEditor>::const_iterator Page::end() const
 {
 	return m_divs.cend();
 }
 
+
 DivEditor& Page::getActive()
 {
 	return m_divs[m_active];
 }
+
 size_t Page::getActiveIndex() const
 {
 	return m_active;
 }
+
 EditState Page::getActiveState() const
 {
 	return m_divs[m_active].getState();
 }
+
 
 void Page::resetView()
 {
 	m_view.reset(sf::FloatRect(0, 0, 1920, 980));
 }
 
+
 void Page::removeFocus()
 {
 	for (auto& div : m_divs)
 		div.setFocused(false);
 }
+
 bool Page::isFocused() const
 {
 	for (size_t i = 0; i < m_divs.size(); i++)
@@ -185,6 +200,7 @@ bool Page::isFocused() const
 
 	return false;
 }
+
 
 void Page::handleEvent(const sf::Event& event)
 {
@@ -254,6 +270,7 @@ void Page::handleEvent(const sf::Event& event)
 		}
 	}
 }
+
 void Page::draw(sf::RenderTarget & target, sf::RenderStates states) const
 {
 	if (m_enableDisplay)

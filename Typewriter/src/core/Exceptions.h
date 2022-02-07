@@ -30,3 +30,9 @@ struct OutOfRange : public std::exception
 		return "Index out of range";
 	}
 };
+
+
+struct FileIOError : public std::exception
+{
+	using std::exception::exception;
+};

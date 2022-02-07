@@ -8,6 +8,6 @@ struct File
 };
 
 
-File openFileName(HWND handle, const char* filter, const std::string& defaultname = "");
+File openFileName(sf::WindowHandle handle, const char* filter, const std::string& defaultname = "");
 
-File saveFileName(HWND handle, const char* filter, const std::string& defaultname = "");
+File saveFileName(sf::WindowHandle handle, const char* filter, const std::string& defaultname = "");
