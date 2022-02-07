@@ -2,8 +2,7 @@
 #include "Application.h"
 
 #include "io/Serializer.h"
-#include "io/ConvertHTML.h"
-#include "system/Dialogs.h"
+#include "io/Dialogs.h"
 
 #include "gui/popups/FileList.h"
 #include "gui/popups/SaveAs.h"
@@ -253,7 +252,7 @@ void Application::render()
 Application::Application()
 	: m_window(sf::VideoMode(1920, 980), "TypeWriter", sf::Style::Default)
 {
-	ConvertHTML::init();
+	wkhtmltopdf_init(0);
 
 	m_font.loadFromFile("res/couriernew.ttf");
 

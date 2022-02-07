@@ -4,9 +4,9 @@
 #include "core/AppData.h"
 #include "core/Exceptions.h"
 
-#include "system/Dialogs.h"
-#include "ioHTML.h"
-#include "OutPDF.h"
+#include "io/Dialogs.h"
+#include "format/ioHTML.h"
+#include "format/OutPDF.h"
 
 
 void saveFile(AppData& app, const Document& doc)
@@ -28,8 +28,7 @@ void exportFile(AppData& app, const Document& doc, File outfile)
 	switch (outfile.type)
 	{
 	case 1:
-		if (!outPDF(app.filepath, output))
-			throw FileIOError("Failed to export file to specified location");
+		outPDF(app.filepath, output);
 	case 2: {
 		std::ofstream stream(output + ".html");
 		if (!stream.is_open())
